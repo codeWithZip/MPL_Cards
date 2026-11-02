@@ -1,0 +1,397 @@
+<!doctype html><html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Учёт платежей v18 — Терминал</title><style>
+:root{font-family:Inter,Segoe UI,Arial,sans-serif;color:#e9eaf6;background:#141721;font-size:14px}*{box-sizing:border-box}body{margin:0}.app{max-width:1920px;margin:auto;padding:24px}header{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}h1{font-size:27px;margin:0 0 6px}h2{font-size:18px;margin:0 0 15px}.muted{color:#a4a9bf}.tag{background:#262941;color:#aaa9ff;padding:7px 12px;border-radius:12px}.cards{display:grid;grid-template-columns:repeat(3,minmax(150px,1fr));gap:14px;margin:25px 0}.card,.panel{background:#222632;border:1px solid #383e50;border-radius:16px;padding:20px}.card small{color:#a9afc4}.big{font-size:28px;font-weight:800;margin:10px 0 0}.layout{display:grid;grid-template-columns:minmax(300px,340px) minmax(0,1fr) minmax(300px,340px);gap:16px;align-items:start}.layout>aside,.transactions-column{min-width:0}.layout .panel{width:100%}.import-column textarea{min-height:270px!important}.import-column .note{overflow-wrap:anywhere}.field{margin-bottom:12px}label{display:block;margin-bottom:6px;color:#c4c9df;font-size:12px;font-weight:600}input,select,textarea{width:100%;background:#171b26;color:white;border:1px solid #424a5f;border-radius:9px;padding:11px;font:inherit;outline:none}input:focus,textarea:focus{border-color:#9b8cff}textarea{resize:vertical;min-height:130px}button{border:0;border-radius:9px;background:#7565ef;color:white;padding:11px 14px;font-weight:700;cursor:pointer}button:hover{filter:brightness(1.12)}button.secondary{background:#34394d}button.danger{background:#59313e;color:#ffd5df}.buttons{display:flex;gap:7px;flex-wrap:wrap}.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.panel{margin-bottom:18px}.tabs{display:flex;gap:8px;margin-bottom:15px;flex-wrap:wrap}.tab{background:#333747}.tab.active{background:#7565ef}.hidden{display:none!important}table{width:100%;border-collapse:collapse;text-align:left;min-width:760px}td,th{padding:12px 9px;border-bottom:1px solid #3b4151;vertical-align:top}th{color:#a9afc4;font-size:12px}td strong{color:#f6e47a}.scroller{overflow-x:auto}.status{border-radius:6px;padding:4px 8px;background:#29473c;color:#8de0a8;font-size:12px}.status.cancel{background:#4d303b;color:#ffc0cd}.actions{display:flex;gap:6px}.actions button{padding:6px 8px}.note{line-height:1.55;color:#a9afc4;font-size:12px}.filters{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr auto;gap:8px;margin-bottom:14px}.notice{min-height:20px;color:#97e2b2;padding:6px 0}.warning{color:#ffd59a}@media(max-width:1250px){.layout{grid-template-columns:300px minmax(0,1fr)}.import-column{grid-column:1/-1}.import-column .panel{max-width:none}}@media(max-width:950px){.layout{grid-template-columns:1fr}.import-column{grid-column:auto}.cards{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr 1fr}}@media(max-width:520px){.app{padding:12px}.cards{grid-template-columns:1fr 1fr}.big{font-size:21px}.filters{grid-template-columns:1fr}}
+.periodbar{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.periodbar button{padding:8px 10px}.periodbar input{width:145px}.quick-card{background:#171b26;border:1px solid #40475c;border-radius:10px;padding:12px;margin-top:10px}.quick-card h3{margin:0 0 9px;font-size:14px}.mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.mini-grid button{grid-column:span 2}.smaller{font-size:12px;color:#adb4c9}.import-column textarea{min-height:200px!important}.panel p.note{margin:8px 0}.card{padding:16px}.cards{margin:16px 0}.tab{padding:9px 11px}.table-label{display:inline-block;color:#a8a4ff;font-size:11px;padding-left:5px}.notice.warn{color:#ffd59a}.periodbar .chosen{background:#7565ef} @media(max-width:1600px){.layout{grid-template-columns:minmax(260px,300px) minmax(0,1fr) minmax(270px,310px)}}
+
+/* TERMINAL THEME v14: purely visual, original data functions unchanged */
+:root{color-scheme:dark;font-family:Inter,'Segoe UI',Arial,sans-serif;color:#edf3ff;background:#0e1420;font-size:13px}
+body{background:radial-gradient(ellipse 90% 35% at 50% -15%,#1f2b48 0%,transparent 75%),#0e1420}
+.app{max-width:2200px;padding:20px 22px 35px}
+header{padding:2px 2px 8px}h1{font-size:25px;letter-spacing:-.6px;color:#f8fbff}h2{font-size:16px;margin:0 0 14px;color:#f5f8ff;letter-spacing:-.2px}
+.muted,.note,.smaller{color:#a3b1c9}.tag{background:#1e2940;color:#b8b4ff;border:1px solid #3a3f6f;border-radius:999px;padding:7px 12px;font-weight:600;font-size:11px}
+.cards{grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:15px 0 18px}
+.card,.panel{background:#1a2332;border:1px solid #344259;box-shadow:0 4px 16px #05091333;border-radius:14px}
+.card{min-height:105px;padding:16px 15px;border-top:2px solid #3f4f69}
+.card small{font-size:11px;color:#a9b9d0;line-height:1.4;display:block}
+.big{font-size:clamp(19px,1.65vw,29px);color:#f6faff;letter-spacing:-.6px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cards .card:nth-child(1){border-top-color:#a78bfa;background:linear-gradient(150deg,#27243f,#1c2636 65%)}
+.cards .card:nth-child(1) .big{color:#f9fcff}
+.cards .card:nth-child(5),.cards .card:nth-child(6){border-top-color:#3bc990;background:linear-gradient(160deg,#193b35,#1c2837 72%)}
+.cards .card:nth-child(5) .big,.cards .card:nth-child(6) .big{color:#55e7aa}
+.layout{grid-template-columns:minmax(235px,260px) minmax(0,1fr) minmax(260px,285px);gap:12px;align-items:start}
+.layout .panel{padding:16px;margin-bottom:12px}
+input,select,textarea{background:#111a28;border:1px solid #40516a;border-radius:8px;padding:9px 10px;font-size:12px;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{border-color:#a78bfa;box-shadow:0 0 0 2px #a78bfa22}
+input::placeholder,textarea::placeholder{color:#74849e;opacity:1}
+.field{margin-bottom:9px}label{font-size:11px;margin-bottom:5px;color:#c6d3e7}
+.row2{gap:8px}button{padding:9px 11px;border-radius:8px;background:#775fe9;font-size:12px;transition:filter .15s,transform .15s}button:hover{filter:brightness(1.15)}button:active{transform:translateY(1px)}
+button.secondary,.tab{background:#2a364b;color:#ecf1ff}button.danger{background:#59323e;color:#ffc8d8}
+.tabs{gap:6px;margin-bottom:12px}.tab{padding:9px 11px}.tab.active,.periodbar .chosen{background:#795fe9;color:white}
+.periodbar{gap:6px;margin-bottom:10px}.periodbar button{padding:7px 9px}.periodbar input{width:125px;padding:7px}
+.filters{gap:6px;grid-template-columns:minmax(140px,1.45fr) repeat(3,minmax(105px,1fr)) minmax(120px,.9fr) auto;margin-bottom:11px}
+.filters input,.filters select{min-width:0;padding:9px 8px;font-size:11px}
+.scroller{scrollbar-color:#526582 #182232;scrollbar-width:thin}
+table{min-width:690px;font-size:12px}td,th{padding:10px 7px;border-bottom:1px solid #344157}th{font-weight:700;font-size:11px;letter-spacing:.15px;color:#b6c5da;background:#1d293b;position:sticky;top:0}tbody tr:nth-child(even){background:#202c3d66}tbody tr:hover{background:#30405880}
+td strong{color:#f9d85a;font-weight:800;font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+#tableArea td:nth-child(3),#tableArea td:nth-child(4){color:#dce7fa}
+#tableArea td .muted{font-size:10px;color:#899db9;overflow-wrap:anywhere;margin-top:3px}
+.table-label{color:#c8b9ff;background:#382f60;border:1px solid #55477d;border-radius:5px;font-weight:700;padding:3px 6px;margin:0 0 5px;font-size:10px}
+.status{display:inline-flex;align-items:center;gap:4px;border:1px solid #277f5b;background:#183d34;color:#69efb1;font-weight:700;white-space:nowrap}.status.cancel{border-color:#a54b61;background:#50303c;color:#ffadbd}
+.status:not(.cancel){box-shadow:0 0 0 1px #153a2e55}
+.actions{gap:4px}.actions button{padding:6px 7px;font-size:11px;white-space:nowrap}
+.quick-card{background:#152032;border-color:#3c4d66;margin-top:13px;padding:10px}.quick-card summary{cursor:pointer;color:#d5c7ff}
+#importPreview{border-top:1px solid #344157;padding-top:8px;margin-top:12px!important}
+.import-column textarea{min-height:285px!important;line-height:1.5;font-family:ui-monospace,'Cascadia Code',Consolas,monospace;font-size:11px}
+#importPaste{background:#735eea}#saveBtn{background:#725be7}#notice{font-size:11px}
+@media(max-width:1650px){.layout{grid-template-columns:minmax(225px,245px) minmax(0,1fr) minmax(245px,270px)}.app{padding:16px}.cards{grid-template-columns:repeat(3,minmax(0,1fr))}.card{min-height:90px}}
+@media(max-width:1180px){.layout{grid-template-columns:235px minmax(0,1fr)}.import-column{grid-column:1/-1}.import-column .panel{max-width:none}.import-column textarea{min-height:140px!important}.cards{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.import-column{grid-column:auto}.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:450px){.app{padding:10px}.cards{gap:7px}.card{padding:11px}.big{font-size:19px}.layout .panel{padding:12px}.filters{grid-template-columns:1fr 1fr}}
+
+/* v15: clear duplicate details and undo deletion */
+.dup-list{display:grid;gap:8px;margin:10px 0}.dup-item{border:1px solid #6e5834;background:#322c27;border-radius:10px;padding:10px;font-size:12px;overflow-wrap:anywhere}.dup-item strong{color:#f6e47a}.dup-item .dup-meta{color:#c9d3e4;margin-top:5px;line-height:1.5}.dup-title{font-size:12px;font-weight:700;color:#ffd58c;margin-top:9px}
+#undoBar{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:30;display:none;align-items:center;justify-content:space-between;gap:14px;background:#27364a;border:1px solid #7968c4;color:#f3f4ff;box-shadow:0 10px 35px #0009;border-radius:12px;padding:11px 15px;width:min(580px,calc(100vw - 24px));font-size:13px}#undoBar.visible{display:flex}#undoBar button{flex-shrink:0;background:#7765e8;padding:9px 14px}
+.card-directory-entry{border-top:1px solid #40475c;padding:10px 0;line-height:1.5}.card-directory-number{color:#c6b5ff;overflow-wrap:anywhere}.card-directory-stats{font-size:11px;color:#b6c5d7;padding-top:4px}.card-directory-stats strong{color:#61eab3}#pasteClipboard{background:#3c8d79}#pasteClipboard:disabled{opacity:.55;cursor:wait}
+
+/* v17: better visual formatting */
+.cards .card:nth-child(1){border-top-color:#f6c65b;background:linear-gradient(160deg,#3a3020,#1c2636 72%)}
+.cards .card:nth-child(1) .big{color:#ffd86a}
+.cards .card:nth-child(2){border-top-color:#7ab7ff;background:linear-gradient(160deg,#1b3450,#1b2737 72%)}
+.cards .card:nth-child(2) .big{color:#9ed1ff}
+.cards .card:nth-child(3){border-top-color:#aa93ff;background:linear-gradient(160deg,#292347,#1c2636 72%)}
+.cards .card:nth-child(3) .big{color:#c7b8ff}
+.cards .card:nth-child(4){border-top-color:#56d4d9;background:linear-gradient(160deg,#193b43,#1c2837 72%)}
+.cards .card:nth-child(4) .big{color:#82edf2}
+.cards .card:nth-child(5){border-top-color:#54d98c;background:linear-gradient(160deg,#183a31,#1c2837 72%)}
+.cards .card:nth-child(5) .big{color:#72efab}
+.cards .card:nth-child(6){border-top-color:#30c978;background:linear-gradient(160deg,#12372d,#1c2837 72%)}
+.cards .card:nth-child(6) .big{color:#56eba0}
+.table-label,.alias-pill{display:inline-flex;align-items:center;gap:6px;background:#2a2048;border:1px solid #6250a5;color:#ddd2ff;border-radius:999px;font-weight:700;padding:4px 10px;font-size:10px;line-height:1}
+.alias-pill{font-size:11px;padding:5px 11px;background:#251f42}
+.req-text,.card-directory-number{font-family:ui-monospace,'Cascadia Code',Consolas,monospace;font-size:12px;letter-spacing:.35px;color:#e9eefc}
+.card-directory-number{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:7px}
+.card-directory-entry{border-top:1px solid #344157;padding:10px 0}
+.card-directory-entry:first-of-type{border-top:0}
+.card-directory-stats{margin-top:6px;color:#a9b9d0;font-size:11px}
+.card-directory-stats strong{color:#72efab}
+.req-box{display:inline-flex;align-items:center;background:#111a28;border:1px solid #40516a;border-radius:10px;padding:4px 8px;margin-top:4px}
+
+/* v19: status fixed, transaction ID full-width */
+.full-transaction-id{width:100%;min-width:0;font-family:ui-monospace,'Cascadia Code',Consolas,monospace;font-size:12px;letter-spacing:.1px}
+
+/* v21: wide, searchable card directory dialog */
+.directory-opener{display:block;width:100%;margin-top:12px;text-align:center;border:1px solid #53648c;background:#23314a!important;color:#ddd6ff!important}
+.cards-modal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:18px}
+.cards-modal-shade{position:absolute;inset:0;background:#050914ce;backdrop-filter:blur(4px)}
+.cards-modal-content{position:relative;width:min(1050px,100%);height:min(760px,calc(100vh - 36px));display:flex;flex-direction:column;background:#182333;border:1px solid #4c5d7a;border-radius:18px;box-shadow:0 24px 90px #000a;overflow:hidden}
+.cards-modal-head{padding:18px 22px;display:flex;align-items:start;justify-content:space-between;gap:15px;border-bottom:1px solid #35465d}
+.cards-modal-head h2{margin:0 0 6px;font-size:19px}.cards-modal-head p{margin:0}.cards-modal-head button{font-size:18px;padding:5px 11px}
+.cards-modal-layout{display:grid;grid-template-columns:minmax(245px,285px) minmax(0,1fr);gap:20px;padding:18px 22px;min-height:0;flex:1}
+.cards-modal-editor{padding:15px;background:#111b2a;border:1px solid #34465f;border-radius:12px;align-self:start}.cards-modal-editor h3{font-size:14px;margin:0 0 14px}
+.cards-modal-editor button{width:100%}.cards-modal-editor #cardNotice{margin-top:12px;line-height:1.45}
+.cards-modal-directory{display:flex;min-height:0;flex-direction:column;gap:8px}.cards-modal-directory label{margin-bottom:0}
+.cards-modal-list{overflow:auto;flex:1;min-height:0;padding-right:8px;scrollbar-color:#506580 #172334}
+.cards-modal-list .card-directory-entry{padding:12px 5px}.cards-modal-list .card-directory-entry:hover{background:#25344a6b}
+@media(max-width:700px){.cards-modal{padding:8px}.cards-modal-content{height:calc(100vh - 16px)}.cards-modal-layout{display:flex;flex-direction:column;overflow:auto;padding:12px;gap:12px}.cards-modal-editor{flex-shrink:0;align-self:stretch}.cards-modal-list{overflow:visible}.cards-modal-directory{min-height:220px;flex-shrink:0}.cards-modal-head{padding:12px}}
+
+/* v22: central import outcome window */
+.import-dialog{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:16px}
+.import-dialog.hidden{display:none!important}
+.import-dialog-overlay{position:absolute;inset:0;background:#030815c9;backdrop-filter:blur(3px)}
+.import-dialog-panel{position:relative;width:min(540px,100%);max-height:min(80vh,700px);overflow:auto;background:#1b2738;border:1px solid #667491;border-radius:16px;padding:22px;box-shadow:0 20px 70px #000c}
+.import-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px}
+.import-dialog-head h2{margin:0;color:#f8fafc}
+.import-dialog-panel .import-problem{background:#352a32;border:1px solid #985767;color:#ffe2e0;border-radius:10px;padding:10px 12px;margin:8px 0;overflow-wrap:anywhere;line-height:1.55}
+.import-dialog-panel .import-summary{background:#193a32;border:1px solid #327a5a;color:#94f0bb;border-radius:10px;padding:10px 12px;margin:8px 0}
+.import-dialog-panel .import-hint{font-size:12px;color:#b8c7dd;line-height:1.5}
+
+/* v23 — сворачиваемые карточки банков */
+.bank-groups{display:grid;gap:12px;min-width:0}
+.bank-group{background:#182437;border:1px solid #39485f;border-radius:14px;overflow:hidden}
+.bank-group>summary{list-style:none;display:flex;align-items:center;gap:12px;justify-content:space-between;cursor:pointer;padding:15px 17px;background:linear-gradient(115deg,#25314a,#1d2940);user-select:none}
+.bank-group>summary::-webkit-details-marker{display:none}
+.bank-group>summary:focus-visible{outline:2px solid #a78bfa;outline-offset:-3px}
+.bank-summary-main{min-width:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.bank-chevron{color:#b3a5ff;font-size:16px;display:inline-block;transition:transform .15s}
+.bank-group[open] .bank-chevron{transform:rotate(90deg)}
+.bank-name{font-weight:800;font-size:16px;color:#e5eaff}
+.bank-count{font-size:11px;color:#a8b9d1;border:1px solid #455570;border-radius:999px;padding:4px 9px;white-space:nowrap}
+.bank-summary-metrics{display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:flex-end}
+.bank-metric{display:flex;flex-direction:column;gap:3px}
+.bank-metric small{color:#94a7c1;font-size:10px}
+.bank-metric strong{font-size:18px;color:#fbd45b;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bank-metric.payments strong{color:#6ee7b7}
+.bank-entries{display:grid;gap:8px;padding:12px}
+.bank-entry{background:#1d2b3e;border:1px solid #33445e;border-radius:10px;padding:11px 12px;display:grid;gap:9px}
+.bank-entry-top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.bank-entry-id{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.bank-entry-number{color:#d1c5ff;font-family:ui-monospace,'Cascadia Code',Consolas,monospace;font-weight:700;letter-spacing:.3px;white-space:nowrap;font-size:12px}
+.bank-entry-money{font-size:16px;font-weight:800;color:#fbd45b;white-space:nowrap;font-variant-numeric:tabular-nums}
+.bank-entry-bottom{display:flex;justify-content:space-between;gap:10px;font-size:11px;color:#9dafc6;flex-wrap:wrap}
+.bank-entry-bar{height:5px;border-radius:999px;background:#344256;overflow:hidden}
+.bank-entry-bar>span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#8671ec,#b39aff)}
+.bank-entry .table-label{display:inline-flex;align-items:center;border-radius:999px;margin:0;padding:4px 10px}
+@media(max-width:680px){.bank-group>summary{align-items:flex-start;flex-direction:column}.bank-summary-metrics{justify-content:flex-start}.bank-entry-number{white-space:normal;overflow-wrap:anywhere}}
+
+/* v24: lightweight motion and clear requisites */
+.req-kind{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;border:1px solid;border-radius:7px;padding:2px 5px;margin-right:7px;font-size:12px;white-space:nowrap;line-height:1.25}
+.req-kind small{font-size:10px;font-weight:700}.req-sbp{background:#153b32;color:#75e4b0;border-color:#37745d}.req-card{background:#31254d;color:#d4bcff;border-color:#65518f}.req-other{background:#253245;color:#aabbd3;border-color:#52627d}
+.req-digits{font-variant-numeric:tabular-nums;letter-spacing:.3px}.bank-entry-number,.req-text,.req-box{display:inline-flex;align-items:center;gap:2px;flex-wrap:wrap}
+.bank-group,.card,.panel{transition:border-color .19s ease,box-shadow .19s ease,background-color .19s ease}
+.bank-group:hover{border-color:#6874a7}.bank-group>summary{transition:background .2s ease}.bank-group>summary:hover{background:#2c3c56}
+.bank-group[open] .bank-entries{animation:appearContent .2s ease-out both}
+@keyframes appearContent{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.import-dialog:not(.hidden) .import-dialog-panel,.cards-modal:not(.hidden) .cards-modal-content{animation:appearContent .2s ease-out both}
+button{transition:background-color .16s ease,filter .16s ease,transform .16s ease}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+</style></head><body><main class="app"><header><div><h1>Учёт платежей</h1><span class="muted">Локальная система • данные сохраняются в файле database.json</span></div><span class="tag">Без интернета и регистрации</span></header><section class="cards"><div class="card"><small>Принято по фильтрам</small><div class="big" id="total">0 ₽</div></div><div class="card"><small>Оплаченных операций</small><div class="big" id="count">0</div></div><div class="card"><small>Уникальных реквизитов</small><div class="big" id="requisitesCount">0</div></div><div class="card"><small>Банков</small><div class="big" id="bankCount">0</div></div><div class="card"><small>Заработок 8% от принятых платежей</small><div class="big" id="earnings8">0 ₽</div></div><div class="card"><small>Заработок 9% от принятых платежей</small><div class="big" id="earnings9">0 ₽</div></div></section><div class="layout"><aside><section class="panel"><h2 id="formTitle">Добавить платёж</h2><form id="paymentForm"><input id="editId" type="hidden"><div class="row2"><div class="field"><label>Сумма, ₽ *</label><input id="amount" inputmode="decimal" placeholder="5030" required></div><div class="field"><label>Дата и время</label><input id="date" type="datetime-local"></div></div><div class="field"><label>Банк *</label><input id="bank" list="bankOptions" placeholder="Wildberries Банк" required><datalist id="bankOptions"></datalist></div><div class="field"><label>Номер карты / телефона / СБП *</label><input id="requisites" list="requisitesOptions" placeholder="2204230457781535" required><datalist id="requisitesOptions"></datalist></div><div class="field"><label>Получатель</label><input id="recipient" placeholder="Александр Андреевич Б."></div><div class="field"><label for="externalId">ID транзакции (проверка дублей)</label><input id="externalId" class="full-transaction-id" maxlength="128" autocomplete="off" spellcheck="false" placeholder="32 символа из первой строки"></div><div class="buttons"><button type="submit" id="saveBtn">Сохранить платёж</button><button type="button" class="secondary hidden" id="cancelEdit">Отменить правку</button></div></form><button type="button" id="openCardsModal" class="secondary directory-opener">▣ Справочник карт и названий</button><div id="notice" class="notice"></div></section></aside><div class="transactions-column"><section class="panel"><div class="tabs"><button class="tab active" data-view="payments">Все операции</button><button class="tab" data-view="banks">По банкам</button><button class="tab" data-view="requisites">По реквизитам</button><button class="tab" data-view="dates">По датам</button></div><div class="periodbar"><span class="smaller">Период:</span><button class="secondary" data-period="today">Сегодня</button><button class="secondary" data-period="week">7 дней</button><button class="secondary" data-period="month">Этот месяц</button><button class="secondary" data-period="all">Всё время</button><input type="date" id="fromDate" title="Дата с"><input type="date" id="toDate" title="Дата по"></div><div class="filters"><input id="search" placeholder="Банк, последние 4 цифры, ID, № заказа"><select id="filterBank"><option value="">Все банки</option></select><select id="filterRequisites"><option value="">Все реквизиты</option></select><select id="filterStatus"><option value="">Все статусы</option><option>Оплачен</option><option>Отменён</option><option>Ожидание</option></select><input type="date" id="filterDate" title="Отобрать по дате"><button class="secondary" id="resetFilters">Сброс</button></div><div id="tableArea" class="scroller"></div></section></div><aside class="import-column"><section class="panel"><h2>Быстрый импорт</h2><p class="smaller">Вставьте текст через Ctrl+V — распознавание начнётся само. Перед сохранением проверьте результат.</p><textarea id="paste" style="min-height:200px" placeholder="##### 3680 RUB
+
+Заказы: 84/16/100
+
+| 2204230457781535 | Александр Андреевич Б. | **Любой банкWildberries ( Вайлдберриз Банк)** |"></textarea><div class="buttons"><button type="button" id="pasteClipboard" title="Прочитать скопированный текст и распознать операции">📋 Из буфера</button><button id="importPaste">Импортировать текст</button><button id="example" class="secondary">Вставить пример</button></div><div id="importPreview" class="note" style="margin-top:12px" aria-live="polite"></div></section></aside></div></main><div id="cardsModal" class="cards-modal hidden" role="dialog" aria-modal="true" aria-labelledby="cardsModalTitle"><div class="cards-modal-shade" id="cardsModalShade"></div><section class="cards-modal-content"><div class="cards-modal-head"><div><h2 id="cardsModalTitle">Справочник карт и названий</h2><p class="smaller">Название карты сохраняется в cards.json · операции не изменяются</p></div><button type="button" class="secondary" id="closeCardsModal" aria-label="Закрыть справочник">✕</button></div><div class="cards-modal-layout"><div class="cards-modal-editor"><h3>Назвать карту</h3><div class="field"><label>Банк</label><input id="cardBank" list="bankOptions" placeholder="Банк Инго"></div><div class="field"><label>Номер карты / СБП</label><input id="cardReq" list="requisitesOptions" placeholder="Реквизиты"></div><div class="field"><label>Название</label><input id="cardAlias" placeholder="Инго 1"></div><button type="button" id="saveCard">Сохранить название</button><div id="cardNotice" class="smaller" aria-live="polite"></div></div><div class="cards-modal-directory"><label for="cardDirectorySearch">Поиск по карте, банку или названию</label><input id="cardDirectorySearch" placeholder="Например: 6753, Инго 1, Сбербанк" autocomplete="off"><div id="cardList" class="cards-modal-list"></div></div></div></section></div><div id="undoBar" role="status" aria-live="polite"><span id="undoText">Платёж удалён</span><button id="undoDelete" type="button">↶ Восстановить</button><button id="dismissUndo" class="secondary" type="button" aria-label="Закрыть">✕</button></div><div id="importDialog" class="import-dialog hidden" role="dialog" aria-modal="true" aria-labelledby="importDialogTitle"><div class="import-dialog-overlay" id="importDialogOverlay"></div><section class="import-dialog-panel"><div class="import-dialog-head"><h2 id="importDialogTitle">Результат импорта</h2><button type="button" id="importDialogClose" class="secondary" aria-label="Закрыть">✕</button></div><div id="importDialogBody"></div><div class="buttons" style="justify-content:flex-end;margin-top:12px"><button type="button" id="importDialogOk">Понятно</button></div></section></div><script>
+'use strict';const KEY='local-payment-ledger-v1';let rows=[];let loaded=false;let saveQueue=Promise.resolve();let view='payments';let cards=[];let cardQueue=Promise.resolve();let lastDeleted=null;const expandedBanks=new Set();const $=id=>document.getElementById(id),money=n=>Number(n||0).toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₽',esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const WORK_BANKS=['Банк Инго','Яндекс Банк','Газпромбанк','Долинск Банк','Уралсиб','Вайлдберриз Банк','Ак Барс','ПСБ','Ренессанс','БКС Банк','Транскапиталбанк'];
+function requisiteBadge(value){const digits=String(value||'').replace(/\D/g,'');const phone=digits.length===10||digits.length===11;const card=digits.length===16;const symbol=phone?'▯':card?'▰':'◇';const label=phone?'СБП':card?'Карта':'Реквизит';return `<span class="req-kind ${phone?'req-sbp':card?'req-card':'req-other'}" title="${label}" aria-label="${label}"><span aria-hidden="true">${symbol}</span><small>${label}</small></span>`}
+function reqView(value){return requisiteBadge(value)+'<span class="req-digits">'+esc(formatRequisites(value))+'</span>'}
+function formatRequisites(value){const digits=String(value??'').replace(/\D/g,'');if(!digits)return String(value??'');if(digits.length===16)return digits.match(/.{1,4}/g).join(' ');if(digits.length===10)return digits.replace(/(\d{3})(\d{3})(\d{2})(\d{2})/,'$1 $2 $3 $4');if(digits.length===11)return digits.replace(/(\d)(\d{3})(\d{3})(\d{2})(\d{2})/,'$1 $2 $3 $4 $5');if(digits.length===12)return digits.replace(/(\d{4})(\d{4})(\d{4})/,'$1 $2 $3');return String(value??'')};
+function canonicalBank(name){const orig=String(name||'').trim().replace(/\s+/g,' '),n=orig.toLowerCase().replace(/ё/g,'е').replace(/[^a-zа-я0-9]/g,'');if(/^(?:сбп)?(?:сбер|sber)(?:банк|bank)?$/.test(n))return 'Сбербанк';if(/wildberries|вайлдберриз|вббанк/.test(n))return 'Вайлдберриз Банк';if(/ингобанк|банкинго|ингострахбанк|ингострах/.test(n))return 'Банк Инго';if(/яндекс|yandex/.test(n))return 'Яндекс Банк';if(/газпромбанк|gazprombank|гпббанк/.test(n))return 'Газпромбанк';if(/долинск|dolinsk/.test(n))return 'Долинск Банк';if(/уралсиб|uralsib/.test(n))return 'Уралсиб';if(/акбарс|akbars/.test(n))return 'Ак Барс';if(/промсвязьбанк|промсвязь|psbbank|^псб$/.test(n))return 'ПСБ';if(/ренессанс|rencredit|renaissance/.test(n))return 'Ренессанс';if(/бкс|bc s|bcsbank|bcs/.test(n))return 'БКС Банк';if(/транскапитал|ткббанк|transcapital|transkapital/.test(n))return 'Транскапиталбанк';return orig}
+rows=rows.map(r=>({...r,bank:canonicalBank(r.bank)}));
+function save(){
+ render();
+ const snapshot=JSON.stringify(rows);
+ saveQueue=saveQueue.catch(()=>{}).then(async()=>{
+  const response=await fetch('/api/payments',{method:'POST',headers:{'Content-Type':'application/json'},body:snapshot});
+  if(!response.ok)throw Error((await response.text()).slice(0,180));
+ });
+ saveQueue.catch(e=>msg('ОШИБКА ЗАПИСИ database.json: '+e.message,true));
+ return saveQueue;
+}
+async function loadDatabase(){
+ try{
+  const response=await fetch('/api/payments',{cache:'no-store'});
+  if(!response.ok)throw Error('HTTP '+response.status);
+  const data=await response.json();
+  if(!Array.isArray(data))throw Error('Неверный формат базы');
+  rows=data.map(r=>({...r,bank:canonicalBank(r.bank),date:String(r.date||nowLocal()).slice(0,16),requisites:String(r.requisites||""),externalId:String(r.externalId||""),recipient:String(r.recipient||""),status:r.status||"Оплачен",amount:Number(r.amount)||0}));
+  loaded=true;render();
+  const old=JSON.parse(localStorage.getItem(KEY)||'[]');
+  if(rows.length===0&&Array.isArray(old)&&old.length&&confirm('Найдены '+old.length+' записей из старой браузерной версии. Перенести их в database.json?')){
+   rows=old.map(clean);await save();msg('Старые записи перенесены в database.json');
+  }
+ }catch(e){loaded=false;msg('Не удалось открыть database.json: '+e.message,true);alert('Ошибка подключения к локальной базе. Запустите START.bat, а не index.html напрямую. '+e.message)}
+}
+function cardKey(bank,req){return canonicalBank(bank)+'|'+String(req||'').replace(/\s/g,'').trim()}
+function cardAlias(bank,req){return cards.find(c=>cardKey(c.bank,c.requisites)===cardKey(bank,req))?.alias||''}
+async function loadCards(){try{const r=await fetch('/api/cards',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const a=await r.json();cards=Array.isArray(a)?a:[];renderCards();render()}catch(e){$('cardNotice').textContent='Не удалось загрузить cards.json: '+e.message}}
+function renderCards(){
+ const used=new Map();
+ for(const r of rows){const k=cardKey(r.bank,r.requisites);if(!used.has(k))used.set(k,{bank:r.bank,requisites:r.requisites})}
+ for(const c of cards){used.set(cardKey(c.bank,c.requisites),c)}
+ const stats=new Map();
+ for(const r of rows){if(r.status!=='Оплачен')continue;const k=cardKey(r.bank,r.requisites);if(!stats.has(k))stats.set(k,{count:0,sum:0,last:''});const a=stats.get(k);a.count++;a.sum+=Number(r.amount)||0;if(String(r.date||'')>a.last)a.last=String(r.date||'')}
+ $('cardList').innerHTML='<p>Карт/реквизитов: '+used.size+'</p>'+[...used.values()].filter(c=>{const q=($('cardDirectorySearch')?.value||'').toLowerCase().replace(/\s/g,'');return !q||[c.bank,c.requisites,formatRequisites(c.requisites),cardAlias(c.bank,c.requisites)].some(v=>String(v||'').toLowerCase().replace(/\s/g,'').includes(q))}).sort((a,b)=>a.bank.localeCompare(b.bank,'ru')).map(c=>{const k=cardKey(c.bank,c.requisites),st=stats.get(k)||{count:0,sum:0,last:''};return `<div class="card-directory-entry"><div>${c.alias?`<span class="alias-pill">${esc(c.alias)}</span> `:''}<span>${esc(c.bank)}</span></div><div class="card-directory-number"><span class="req-box">${reqView(c.requisites)}</span> <button type="button" class="secondary" style="padding:4px 6px" data-cardedit="${esc(k)}">Назвать</button></div><div class="card-directory-stats"><strong>${money(st.sum)}</strong> · ${st.count} оплат · Последняя: ${st.last?esc(st.last.replace('T',' ')):'—'}</div></div>`}).join('');
+ $('cardList').querySelectorAll('[data-cardedit]').forEach(el=>el.onclick=()=>{const c=used.get(el.dataset.cardedit);if(!c)return;$('cardBank').value=c.bank;$('cardReq').value=c.requisites;$('cardAlias').value=cardAlias(c.bank,c.requisites);$('cardAlias').focus()});
+}
+const cardModal=$('cardsModal');
+function closeDirectory(){cardModal.classList.add('hidden');document.body.style.overflow='';$('openCardsModal').focus()}
+$('openCardsModal').onclick=()=>{cardModal.classList.remove('hidden');document.body.style.overflow='hidden';renderCards();$('cardDirectorySearch').focus()};
+$('closeCardsModal').onclick=closeDirectory;
+$('cardsModalShade').onclick=closeDirectory;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!cardModal.classList.contains('hidden')){e.preventDefault();closeDirectory()}});
+$('cardDirectorySearch').addEventListener('input',renderCards);
+$('saveCard').onclick=async()=>{const bank=canonicalBank($('cardBank').value),requisites=$('cardReq').value.replace(/\s/g,''),alias=$('cardAlias').value.trim();if(!bank||!requisites||!alias){$('cardNotice').textContent='Заполните все поля';return}const next=cards.filter(c=>cardKey(c.bank,c.requisites)!==cardKey(bank,requisites));next.push({bank,requisites,alias});try{cardQueue=cardQueue.catch(()=>{}).then(async()=>{const r=await fetch('/api/cards',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(next)});if(!r.ok)throw Error(await r.text())});await cardQueue;cards=next;$('cardNotice').textContent='Название сохранено в cards.json';renderCards();render()}catch(e){$('cardNotice').textContent='Ошибка: '+e.message}};
+function dateOffset(days){const d=new Date();d.setDate(d.getDate()+days);return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
+document.querySelectorAll('[data-period]').forEach(btn=>btn.onclick=()=>{let v=btn.dataset.period;const now=nowLocal().slice(0,10);$('fromDate').value=v==='today'?now:v==='week'?dateOffset(-6):v==='month'?now.slice(0,7)+'-01':'';$('toDate').value=v==='all'?'':now;render()});
+function nowLocal(){const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16)}$('date').value=nowLocal();function resetForm(){recognizedSingle=null;$('paymentForm').reset();$('date').value=nowLocal();$('editId').value='';$('formTitle').textContent='Добавить платёж';$('saveBtn').textContent='Сохранить платёж';$('cancelEdit').classList.add('hidden')}function msg(s,bad=false){$('notice').textContent=s;$('notice').style.color=bad?'#ff9ea8':'#97e2b2'}
+function parseAmount(s){return Number(String(s).replace(/\s/g,'').replace(/₽|RUB/gi,'').replace(',','.'))}function valid(r){return Number.isFinite(r.amount)&&r.amount>0&&r.bank&&r.requisites}function clean(r){return {id:r.id||crypto.randomUUID(),externalId:String(r.externalId||'').trim(),amount:parseAmount(r.amount),bank:canonicalBank(r.bank),requisites:String(r.requisites||'').replace(/\s+/g,'').trim(),recipient:String(r.recipient||'').trim(),status:['Оплачен','Отменён','Ожидание'].includes(r.status)?r.status:'Оплачен',date:String(r.date||nowLocal()).slice(0,16),importFingerprint:String(r.importFingerprint||''),orderNumber:String(r.orderNumber||'').trim()}}
+$('paymentForm').onsubmit=e=>{e.preventDefault();if(!loaded){msg('База недоступна',true);return}const r=clean({id:$('editId').value||undefined,externalId:$('externalId').value,amount:$('amount').value,bank:$('bank').value,requisites:$('requisites').value,recipient:$('recipient').value,status:'Оплачен',date:$('date').value,orderNumber:rows.find(x=>x.id===$('editId').value)?.orderNumber||(recognizedSingle?.externalId===$('externalId').value?recognizedSingle.orderNumber:'')||'',importFingerprint:recognizedSingle?.externalId===$('externalId').value?recognizedSingle.importFingerprint:''});if(!valid(r)){msg('Проверьте сумму, банк и реквизиты',true);return}if(r.externalId&&rows.some(x=>x.externalId.toLowerCase()===r.externalId.toLowerCase()&&x.id!==r.id)){const dupe=rows.find(x=>x.externalId.toLowerCase()===r.externalId.toLowerCase()&&x.id!==r.id);msg('Дубль: '+money(dupe.amount)+' · '+dupe.bank+' · '+formatRequisites(dupe.requisites)+' · '+dupe.date.replace('T',' '),true);return}const idx=rows.findIndex(x=>x.id===r.id);if(idx>=0)rows[idx]=r;else rows.unshift(r);recognizedSingle=null;save().then(()=>{resetForm();$('importPreview').innerHTML='';$('paste').value='';msg('Платёж сохранён в database.json')}).catch(e=>msg('Не удалось сохранить платёж. Проверьте соединение с локальной базой.',true))};$('cancelEdit').onclick=resetForm;$('bank').addEventListener('input',()=>{$('requisitesOptions').innerHTML=[...new Set(rows.filter(r=>r.bank===canonicalBank($('bank').value)).map(r=>r.requisites))].map(x=>`<option value="${esc(x)}"></option>`).join('')});
+function parseLine(line){const p=line.includes('\t')?line.split('\t'):line.split(';');if(p.length<4)return null;const a=parseAmount(p[0]);return clean({amount:a,requisites:p[1],recipient:p[2],bank:p[3],status:'Оплачен',externalId:(p[5]||'').trim(),date:(p[6]||nowLocal()).trim()})}
+function stripMarkup(t){return String(t||'').replace(/&nbsp;|&#x20;|&#32;/gi,' ').replace(/<[^>]*>/g,'').replace(/\*\*/g,'').replace(/\[svg\]\([^\n]*\)/gi,'').trim()}
+function readBulk(text){
+ const src=String(text).replace(/\r/g,'').replace(/\u00a0/g,' ').replace(/&#x20;|&nbsp;/gi,' ');
+ // Supports Markdown tables and plain text copied directly from browser.
+ const idMatcher=/\b[a-f0-9]{32}\b/gi;
+ const ids=[...src.matchAll(idMatcher)].filter(m=>!/(?:https?:\/\/|\/download_check\/)/i.test(src.slice(Math.max(0,m.index-40),m.index)));
+ const chunks=ids.length?ids.map((m,i)=>({id:m[0].toLowerCase(),text:src.slice(m.index,(ids[i+1]||{index:src.length}).index)})):[{id:'',text:src}];
+ const records=[],issues=[];
+ for(const chunk of chunks){
+   const lines=chunk.text.split('\n').map(stripMarkup).map(s=>s.replace(/^#+\s*/, '').trim());
+   const orderMatch=chunk.text.match(/^\s*(?:\|\s*)?(?:\*\*)?[a-f0-9]{32}(?:\*\*)?\s*(?:\||\s+)\s*(?:\*\*)?(\d{5,12})(?:\*\*)?/i);
+   const orderNumber=orderMatch?.[1]||'';
+   const amounts=[...chunk.text.matchAll(/(?:^|\n)\s*(?:#{1,6}\s*)?(?:\*\*)?([\d][\d\s.,]*)\s*(?:RUB|₽)(?:\*\*)?/gim)];
+   if(!amounts.length){
+     if(!chunk.id){for(const line of chunk.text.split('\n')){const r=parseLine(line);if(r&&valid(r))records.push(r)}}
+     else issues.push('Не найдена сумма для ID '+chunk.id);
+     continue;
+   }
+   for(let i=0;i<amounts.length;i++){
+     if(chunk.id&&i>0)break;
+     const amount=parseAmount(amounts[i][1]);
+     const part=chunk.id?chunk.text:chunk.text.slice(amounts[i].index,(amounts[i+1]||{index:chunk.text.length}).index);
+     const partLines=part.split('\n').map(stripMarkup).map(s=>s.replace(/^#+\s*/, '').trim()).filter(Boolean);
+     let req='',recipient='',bankField='';
+     // Original Markdown table: | 2204... | Recipient | Bank |
+     const table=part.split('\n').find(line=>/^\s*\|\s*(?:\d[\d\s-]{7,24}|\+?\d[\d\s()-]{8,19})\s*\|/.test(line));
+     if(table){
+       const cols=table.split('|').slice(1).map(stripMarkup);
+       req=(cols[0]||'').replace(/[\s-]/g,''); recipient=(cols[1]||'').trim();bankField=(cols[2]||'').trim();
+     }else{
+       // Plain text from Chrome clipboard: card, recipient, bank are on separate lines.
+       // Anchor on a standalone 9-20 digit requisite; never use order numbers or links.
+       const idx=partLines.findIndex(s=>/^(?:\+?\d[\d\s()-]{7,24}|\d[\d\s-]{7,24})$/.test(s)&&s.replace(/\D/g,'').length>=9&&s.replace(/\D/g,'').length<=20);
+       if(idx>=0){
+         req=partLines[idx].replace(/[\s()-]/g,'');
+         recipient=partLines[idx+1]||'';
+         bankField=partLines[idx+2]||'';
+       }
+     }
+     if(!req){issues.push('Не найдены реквизиты для '+(chunk.id||money(amount)));continue}
+     bankField=bankField.replace(/^Любой\s*банк\s*/i,'').trim();
+     const bracket=bankField.match(/\(([^()]*)\)/);
+     if(bracket&&/(?:банк|ПСБ|Уралсиб|Ренессанс|Ак Барс)/i.test(bracket[1]))bankField=bracket[1].trim();
+     const fallback=part.match(/(?:^|\n)\s*(?:ID(?:\s+операции)?|ID транзакции)\s*[:#]\s*([a-z0-9-]+)/i)?.[1]||'';
+     const dateMatch=part.match(/\b(\d{4}-\d\d-\d\d)\s+(\d\d:\d\d)(?::\d\d)?/);
+     const date=dateMatch?dateMatch[1]+'T'+dateMatch[2]:nowLocal();
+     const externalId=chunk.id||fallback;
+     const r=clean({amount,requisites:req,recipient,bank:bankField,status:'Оплачен',externalId,date,orderNumber});
+     r.importFingerprint=externalId?'':[r.amount,r.requisites,r.recipient.toLowerCase(),r.bank,part.replace(/\s+/g,' ').trim()].join('|');
+     if(valid(r)&&recipient)records.push(r);else issues.push('Не распознаны поля для '+(externalId||money(amount)));
+   }
+ }
+ return {records,issues};
+}
+let staged=[];
+let recognizedSingle=null;
+function fillPaymentForm(r){
+ resetForm();
+ $('amount').value=String(r.amount);
+ $('bank').value=r.bank;
+ $('requisites').value=r.requisites;
+ $('recipient').value=r.recipient;
+ $('date').value=r.date;
+ $('externalId').value=r.externalId;
+ recognizedSingle=r;
+ $('formTitle').textContent='Проверьте распознанный платёж';
+ $('saveBtn').textContent='Сохранить распознанный платёж';
+ $('paymentForm').scrollIntoView({behavior:'smooth',block:'start'});
+}
+let importBusy=false;
+function closeImportDialog(){ $('importDialog').classList.add('hidden') }
+function showImportDialog(title, added, problems){
+ $('importDialogTitle').textContent=title;
+ const body=$('importDialogBody');body.replaceChildren();
+ if(added){const s=document.createElement('div');s.className='import-summary';s.textContent='Сохранено новых операций: '+added;body.appendChild(s)}
+ for(const problem of problems.slice(0,40)){const item=document.createElement('div');item.className='import-problem';item.textContent=problem;body.appendChild(item)}
+ if(problems.length>40){const p=document.createElement('p');p.className='import-hint';p.textContent='И ещё '+(problems.length-40)+' предупреждений.';body.appendChild(p)}
+ if(!added&&!problems.length){body.textContent='Новых транзакций не найдено.'}
+ $('importDialog').classList.remove('hidden');
+ $('importDialogOk').focus();
+}
+$('importDialogClose').onclick=closeImportDialog;
+$('importDialogOk').onclick=closeImportDialog;
+$('importDialogOverlay').onclick=closeImportDialog;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('importDialog').classList.contains('hidden'))closeImportDialog()});
+async function autoImport(){
+ if(importBusy)return;
+ const text=$('paste').value.trim();
+ if(!text)return;
+ if(!loaded){showImportDialog('Ошибка импорта',0,['Локальная база недоступна. Запустите START.bat и обновите страницу.']);return}
+ importBusy=true;
+ $('importPaste').disabled=true;
+ $('pasteClipboard').disabled=true;
+ try{
+  const result=readBulk(text);
+  const existingById=new Map(rows.filter(x=>x.externalId).map(x=>[String(x.externalId).toLowerCase(),x]));
+  const existingByFingerprint=new Map(rows.filter(x=>x.importFingerprint).map(x=>[x.importFingerprint,x]));
+  const batchIds=new Map(),batchFingerprints=new Map(),newRows=[],problems=[...result.issues];
+  for(const r of result.records){
+    const key=String(r.externalId||'').toLowerCase();
+    const dupe=(key&&(existingById.get(key)||batchIds.get(key)))||(r.importFingerprint&&(existingByFingerprint.get(r.importFingerprint)||batchFingerprints.get(r.importFingerprint)));
+    if(dupe){problems.push('Платёж уже существует ('+money(dupe.amount)+', '+dupe.bank+'). Повтор пропущен.');continue}
+    if(!valid(r)||!r.recipient){problems.push('Не распознаны сумма, банк, реквизиты или получатель. Проверьте скопированный блок.');continue}
+    if(!key){problems.push('Предупреждение: у платежа '+money(r.amount)+' нет ID. Проверка дублей ограничена.')}
+    newRows.push(r);if(key)batchIds.set(key,r);if(r.importFingerprint)batchFingerprints.set(r.importFingerprint,r);
+  }
+  if(!newRows.length){showImportDialog('Импорт: нет новых платежей',0,problems.length?problems:['Не найдены платежи. Проверьте формат скопированного текста.']);return}
+  const oldRows=rows.slice();
+  rows.push(...newRows);
+  try{
+   await save();
+   $('paste').value='';$('importPreview').innerHTML='';
+   msg('Автоматически сохранено '+newRows.length+' операций в database.json.');
+   if(problems.length)showImportDialog('Импорт с предупреждениями',newRows.length,problems);
+   else showImportDialog('Импорт выполнен',newRows.length,[]);
+  }catch(e){
+   rows=oldRows;render();
+   showImportDialog('Ошибка сохранения',0,['Не удалось сохранить платежи. Проверьте, запущен ли START.bat и доступна ли папка базы.','Транзакции не будут показаны как сохранённые. Попробуйте импортировать снова.']);
+  }
+ }catch(e){showImportDialog('Ошибка распознавания',0,['Не удалось прочитать текст операции. Попробуйте скопировать его заново.'])}
+ finally{importBusy=false;$('importPaste').disabled=false;$('pasteClipboard').disabled=false}
+}
+$('importPaste').onclick=autoImport;
+$('paste').addEventListener('paste',()=>setTimeout(autoImport,0));
+$('pasteClipboard').onclick=async()=>{
+ if(importBusy)return;
+ try{
+  if(!navigator.clipboard?.readText)throw Error('Чтение буфера недоступно.');
+  const text=await navigator.clipboard.readText();
+  if(!text.trim())throw Error('Буфер обмена пуст. Скопируйте текст транзакции.');
+  $('paste').value=text;await autoImport();
+ }catch(e){showImportDialog('Ошибка буфера обмена',0,['Браузер не разрешил читать буфер обмена. Вставьте текст сочетанием Ctrl+V.'])}
+};
+$('example').onclick=()=>{$('paste').value=`| **ad9fa5712db3a5a5b8ef63d4ffb01c46** | **67114894** | Дата заказа: |
+| --- | --- | --- |
+
+###### 2026-11-01 20:02:33
+
+##### 3680 RUB
+
+Заказы: 84/16/**100**
+
+[svg](https://example.invalid/check "Чек")
+**Pdfchecker:** ✅ Чек Т-Банка по карте
+
+| 2204230457781535 | Александр Андреевич Б. | **Любой банкWildberries ( Вайлдберриз Банк)** |
+| --- | --- | --- |`;$('importPreview').innerHTML=''};
+function visible(){
+ const searchText=$('search').value.toLowerCase().trim();
+ const selectedBank=$('filterBank').value;
+ const selectedStatus=$('filterStatus').value;
+ const selectedDate=$('filterDate').value;
+ const selectedRequisites=$('filterRequisites').value;
+ const dateFrom=$('fromDate').value;
+ const dateTo=$('toDate').value;
+ return rows.filter(r=>{
+  const date=String(r.date||'').slice(0,10);
+  // Нормализуем разделители: поиск 7988 найдёт карту с любым форматированием.
+  // При вводе ровно 4 цифр сначала проверяем окончание номера.
+  const queryDigits=searchText.replace(/\D/g,'');
+  const reqDigits=String(r.requisites||'').replace(/\D/g,'');
+  const lastFourMatch=/^\d{4}$/.test(searchText)&&reqDigits.endsWith(searchText);
+  const normalizedReqMatch=queryDigits.length>=4&&reqDigits.includes(queryDigits);
+  const matchesText=!searchText||lastFourMatch||normalizedReqMatch||[r.bank,r.requisites,cardAlias(r.bank,r.requisites),r.recipient,r.externalId,r.orderNumber,r.amount].some(x=>String(x??'').toLowerCase().includes(searchText));
+  return matchesText&&(!selectedBank||r.bank===selectedBank)&&(!selectedRequisites||r.requisites===selectedRequisites)&&(!selectedStatus||r.status===selectedStatus)&&(!selectedDate||date===selectedDate)&&(!dateFrom||date>=dateFrom)&&(!dateTo||date<=dateTo);
+ }).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+}
+function group(data,key){const m=new Map();for(const r of data){const k=key(r);if(!m.has(k))m.set(k,{key:k,total:0,count:0,bank:r.bank,recipient:r.recipient,requisites:r.requisites});const z=m.get(k);z.total+=r.amount;z.count++}return [...m.values()].sort((a,b)=>b.total-a.total)}
+function render(){const selected=$('filterBank').value,banks=[...new Set([...WORK_BANKS,...rows.map(x=>x.bank)])].sort((a,b)=>a.localeCompare(b,'ru'));$('filterBank').innerHTML='<option value="">Все банки</option>'+banks.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');$('filterBank').value=banks.includes(selected)?selected:'';$('bankOptions').innerHTML=banks.map(x=>`<option value="${esc(x)}"></option>`).join('');const selectedReq=$('filterRequisites').value,reqs=[...new Set(rows.filter(r=>!$('filterBank').value||r.bank===$('filterBank').value).map(r=>r.requisites))].sort();$('filterRequisites').innerHTML='<option value="">Все реквизиты</option>'+reqs.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');$('filterRequisites').value=reqs.includes(selectedReq)?selectedReq:'';$('requisitesOptions').innerHTML=[...new Set(rows.filter(r=>!$('bank').value||r.bank===canonicalBank($('bank').value)).map(r=>r.requisites))].map(x=>`<option value="${esc(x)}"></option>`).join('');const data=visible(),paid=data.filter(x=>x.status==='Оплачен');const acceptedSum=paid.reduce((s,x)=>s+x.amount,0);$('total').textContent=money(acceptedSum);$('earnings8').textContent=money(Math.round(acceptedSum*8)/100);$('earnings9').textContent=money(Math.round(acceptedSum*9)/100);$('count').textContent=paid.length;$('requisitesCount').textContent=new Set(paid.map(x=>x.bank+'|'+x.requisites)).size;$('bankCount').textContent=new Set(paid.map(x=>x.bank)).size;renderCards();let table='';if(view==='dates'){const summary=group(paid,r=>r.date.slice(0,10));table='<table><thead><tr><th>Дата</th><th>Платежей</th><th>Принято</th><th>8%</th><th>9%</th></tr></thead><tbody>'+summary.sort((a,b)=>b.key.localeCompare(a.key)).map(g=>`<tr><td>${esc(g.key)}</td><td>${g.count}</td><td><strong>${money(g.total)}</strong></td><td>${money(g.total*0.08)}</td><td>${money(g.total*0.09)}</td></tr>`).join('')+'</tbody></table>'}else if(view==='payments'){table='<table><thead><tr><th>Дата</th><th>Сумма</th><th>Банк</th><th>Реквизиты / получатель</th><th>Статус</th><th>Действия</th></tr></thead><tbody>'+data.map(r=>`<tr><td>${esc(r.date.replace('T',' '))}<div class="muted">${esc(r.externalId)}${r.orderNumber?' · заказ № '+esc(r.orderNumber):''}</div></td><td><strong>${money(r.amount)}</strong></td><td>${esc(r.bank)}</td><td>${cardAlias(r.bank,r.requisites)?`<span class="table-label">${esc(cardAlias(r.bank,r.requisites))}</span><br>`:''}<span class="req-text">${reqView(r.requisites)}</span><div class="muted">${esc(r.recipient)}</div></td><td><span class="status ${r.status==='Отменён'?'cancel':''}">${esc(r.status)}</span></td><td><div class="actions"><button class="secondary" data-edit="${esc(r.id)}">Изменить</button><button class="danger" data-delete="${esc(r.id)}">✕</button></div></td></tr>`).join('')+'</tbody></table>'}else{const byBank=view==='banks',groups=group(paid,r=>byBank?r.bank:r.bank+'|'+r.requisites);if(byBank){table='<div class="bank-groups">'+groups.map(g=>{const entries=group(paid.filter(r=>r.bank===g.bank),r=>r.bank+'|'+r.requisites);return `<details class="bank-group" data-bank-group="${esc(g.bank)}" ${expandedBanks.has(g.bank)?'open':''}><summary><div class="bank-summary-main"><span class="bank-chevron">▸</span><span class="bank-name">${esc(g.bank)}</span><span class="bank-count">${entries.length} реквизитов</span></div><div class="bank-summary-metrics"><span class="bank-metric payments"><small>Оплат</small><strong>${g.count}</strong></span><span class="bank-metric"><small>Принято</small><strong>${money(g.total)}</strong></span></div></summary><div class="bank-entries">`+entries.map(c=>{const alias=cardAlias(c.bank,c.requisites),pct=g.total>0?Math.min(100,Math.max(0,100*c.total/g.total)):0;return `<div class="bank-entry"><div class="bank-entry-top"><div class="bank-entry-id">${alias?`<span class="table-label">${esc(alias)}</span>`:''}<span class="bank-entry-number">${reqView(c.requisites)}</span></div><span class="bank-entry-money">${money(c.total)}</span></div><div class="bank-entry-bottom"><span>${c.count} оплат · ${pct.toLocaleString('ru-RU',{maximumFractionDigits:1})}% оборота банка</span><span>${esc(c.recipient||'')}</span></div><div class="bank-entry-bar"><span style="width:${pct}%"></span></div></div>`}).join('')+'</div></details>'}).join('')+'</div>'}else{table='<table><thead><tr><th>Банк / реквизиты</th><th>Получатель</th><th>Оплат</th><th>Сумма</th></tr></thead><tbody>'+groups.map(g=>`<tr><td>${esc(g.bank)}<div class="muted"><span class="req-text">${reqView(g.requisites)}</span>${cardAlias(g.bank,g.requisites)?' · <span class="table-label">'+esc(cardAlias(g.bank,g.requisites))+'</span>':''}</div></td><td>${esc(g.recipient)}</td><td>${g.count}</td><td><strong>${money(g.total)}</strong></td></tr>`).join('')+'</tbody></table>'}}if((view==='payments'&&!data.length)||(view!=='payments'&&!paid.length))table='<p class="muted">Записей пока нет. Добавьте первый платёж слева или измените фильтры.</p>';$('tableArea').innerHTML=table;$('tableArea').querySelectorAll('[data-bank-group]').forEach(el=>el.addEventListener('toggle',()=>{if(el.open)expandedBanks.add(el.dataset.bankGroup);else expandedBanks.delete(el.dataset.bankGroup)}));$('tableArea').querySelectorAll('[data-edit]').forEach(el=>el.onclick=()=>{const r=rows.find(x=>x.id===el.dataset.edit);if(!r)return;for(const key of ['amount','bank','requisites','recipient','externalId','date'])$(key).value=r[key];$('editId').value=r.id;$('formTitle').textContent='Изменить платёж';$('saveBtn').textContent='Сохранить изменения';$('cancelEdit').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})});$('tableArea').querySelectorAll('[data-delete]').forEach(el=>el.onclick=()=>deletePayment(el.dataset.delete))}
+
+function showUndo(){if(!lastDeleted){$('undoBar').classList.remove('visible');return}const r=lastDeleted.record;$('undoText').textContent='Удалён платёж '+money(r.amount)+' · '+r.bank+' · '+formatRequisites(r.requisites);$('undoBar').classList.add('visible')}
+async function deletePayment(id){
+ if(!loaded){msg('База недоступна',true);return}
+ const index=rows.findIndex(r=>r.id===id);if(index<0)return;
+ const r=rows[index];if(!confirm('Удалить платёж '+money(r.amount)+' ('+r.bank+')? Его можно восстановить.'))return;
+ const previous=lastDeleted;lastDeleted={record:{...r},index};rows.splice(index,1);render();
+ try{await save();showUndo();msg('Платёж удалён. Для отмены нажмите «Восстановить» внизу экрана.')}
+ catch(e){rows.splice(Math.min(index,rows.length),0,r);lastDeleted=previous;render();showUndo();msg('Не удалось удалить платёж: '+e.message,true)}
+}
+$('undoDelete').onclick=async()=>{
+ if(!lastDeleted||!loaded)return;
+ const deletion=lastDeleted;const r=deletion.record;
+ if(rows.some(x=>x.id===r.id||(r.externalId&&x.externalId&&x.externalId.toLowerCase()===r.externalId.toLowerCase()))){msg('Восстановление отменено: такая транзакция уже есть в базе.',true);return}
+ rows.splice(Math.min(deletion.index,rows.length),0,r);lastDeleted=null;$('undoBar').classList.remove('visible');render();
+ try{await save();msg('Платёж '+money(r.amount)+' восстановлен в database.json')}
+ catch(e){rows=rows.filter(x=>x.id!==r.id);lastDeleted=deletion;render();showUndo();msg('Не удалось восстановить: '+e.message,true)}
+};
+$('dismissUndo').onclick=()=>{$('undoBar').classList.remove('visible')};
+for(const id of ['search','filterBank','filterRequisites','filterStatus','filterDate','fromDate','toDate'])$(id).addEventListener('input',render);$('resetFilters').onclick=()=>{for(const id of ['search','filterBank','filterRequisites','filterStatus','filterDate','fromDate','toDate'])$(id).value='';render()};document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{view=b.dataset.view;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));render()});render();loadDatabase().then(loadCards);
+</script></body></html>
